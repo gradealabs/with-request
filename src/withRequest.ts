@@ -1,5 +1,6 @@
 import { withHandlers, lifecycle, compose, mapProps, branch, withStateHandlers } from 'recompose'
 import omitBy from 'lodash.omitby'
+import AbortablePromise from './AbortablePromise'
 
 /**
  * Prepares a set of props used to help with making asynchronous request and
@@ -21,40 +22,6 @@ import omitBy from 'lodash.omitby'
  * @param {{ (props: Object): (params) => AbortablePromise<any> }} request The request function that accepts props
  * @param {{ prefix?: string, defaultResponse?: any, overlapStrategy?: 'cancel' }} [options] The options used when constructing the HOC
  */
-
-export class AbortablePromise extends Promise<any> {
-  static ABORTED = {}
-
-  constructor (fn) {
-    let init = null
-
-    const wrap = function (resolve, reject) {
-      let aborted = false
-
-      let resolveWrapper = (response) => !aborted && resolve(response)
-      let rejectWrapper = (error) => !aborted && reject(error)
-
-      init = self => {
-        self.abort = () => {
-          if (aborted) {
-            throw new Error('AbortablePromise already aborted')
-          }
-
-          aborted = true
-          resolve(AbortablePromise.ABORTED)
-        }
-      }
-
-      fn(resolveWrapper, rejectWrapper)
-    }
-
-    super(wrap)
-
-    if (init) {
-      init(this)
-    }
-  }
-}
 
 export default function withRequest (request, { prefix = '', defaultResponse = undefined, overlapStrategy = 'cancel' } = {}) {
   if (typeof request !== 'function') {
@@ -109,6 +76,7 @@ export default function withRequest (request, { prefix = '', defaultResponse = u
           })
           .catch(error => {
             setPendingPromise(null)
+            if (error === AbortablePromise.ABORTED) return
             setError(error)
           })
 
@@ -145,11 +113,11 @@ export function withCallRequestOnMount (execRequest) {
 
   return lifecycle({
     componentDidMount () {
-      this.handle = execRequest(this.props)
+      this.abortablePromise = execRequest(this.props)
     },
     componentWillUnmount () {
-      if (this.handle && this.handle.abort) {
-        this.handle.abort()
+      if (this.abortablePromise && this.abortablePromise.abort) {
+        this.abortablePromise.abort()
       }
     }
   })
@@ -173,11 +141,11 @@ export function withCallRequestOnChange (shouldCall, execRequest) {
         return
       }
 
-      this.handle = execRequest(this.props)
+      this.abortablePromise = execRequest(this.props)
     },
     componentWillUnmount () {
-      if (this.handle && this.handle.abort) {
-        this.handle.abort()
+      if (this.abortablePromise && this.abortablePromise.abort) {
+        this.abortablePromise.abort()
       }
     }
   })
