@@ -44,7 +44,7 @@
   },
   "homepage": "https://github.com/gradealabs/with-request#readme",
   "dependencies": {
-    "recompose": "^0.30.0",
-    "lodash.omitby": "^4.6.0"
+    "recompose": "0.30.0",
+    "lodash.omitby": "4.6.0"
   }
 }
