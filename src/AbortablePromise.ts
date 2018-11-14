@@ -20,7 +20,7 @@ export default class AbortablePromise<T> {
       if (onRejected) {
         onRejected(this.aborted ? AbortablePromise.ABORTED : reason)
       } else {
-        throw reason
+        throw this.aborted ? AbortablePromise.ABORTED : reason
       }
     })
   }
