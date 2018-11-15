@@ -19,7 +19,7 @@ import CancellablePromise from 'cancelable-promise'
  * Example `${prefix}Request`, `${prefix}Response`, `${prefix}Pending`, etc.
  *
  * @example withRequest(props => (filter) => asyncAction(props.id, filter), { prefix: 'items', defaultResponse: [] })(Component)
- * @param {{ (props: Object): (params) => AbortablePromise<any> }} request The request function that accepts props
+ * @param {{ (props: Object): (params) => Promise<any> }} request The request function that accepts props
  * @param {{ prefix?: string, defaultResponse?: any, overlapStrategy?: 'cancel' }} [options] The options used when constructing the HOC
  */
 
