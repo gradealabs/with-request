@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2018-11-15
+### Changed
+- Use CancellablePromise to cancel overlapping promises instead of the flawed AbortablePromise
+
 ## [1.0.0] - 2018-11-13
 ### Added
 - Initial commit

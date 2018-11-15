@@ -1,6 +1,6 @@
 import { withHandlers, lifecycle, compose, mapProps, branch, withStateHandlers } from 'recompose'
 import omitBy from 'lodash.omitby'
-import AbortablePromise from './AbortablePromise'
+import CancellablePromise from 'cancelable-promise'
 
 /**
  * Prepares a set of props used to help with making asynchronous request and
@@ -63,20 +63,18 @@ export default function withRequest (request, { prefix = '', defaultResponse = u
         } = props
 
         if (pendingPromise) {
-          pendingPromise.abort()
+          pendingPromise.cancel()
         }
 
-        let promise = new AbortablePromise(resolve => resolve(request(props)(...args)))
+        const promise = new CancellablePromise(resolve => resolve(request(props)(...args)))
 
         promise
           .then(response => {
             setPendingPromise(null)
-            if (response === AbortablePromise.ABORTED) return
             setResponse(response)
           })
           .catch(error => {
             setPendingPromise(null)
-            if (error === AbortablePromise.ABORTED) return
             setError(error)
           })
 
@@ -113,11 +111,11 @@ export function withCallRequestOnMount (execRequest) {
 
   return lifecycle({
     componentDidMount () {
-      this.abortablePromise = execRequest(this.props)
+      this.cancellablePromise = execRequest(this.props)
     },
     componentWillUnmount () {
-      if (this.abortablePromise && this.abortablePromise.abort) {
-        this.abortablePromise.abort()
+      if (this.cancellablePromise && this.cancellablePromise.cancel) {
+        this.cancellablePromise.cancel()
       }
     }
   })
@@ -141,11 +139,11 @@ export function withCallRequestOnChange (shouldCall, execRequest) {
         return
       }
 
-      this.abortablePromise = execRequest(this.props)
+      this.cancellablePromise = execRequest(this.props)
     },
     componentWillUnmount () {
-      if (this.abortablePromise && this.abortablePromise.abort) {
-        this.abortablePromise.abort()
+      if (this.cancellablePromise && this.cancellablePromise.cancel) {
+        this.cancellablePromise.cancel()
       }
     }
   })

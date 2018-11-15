@@ -13,7 +13,7 @@ class Widget extends React.PureComponent {
   render () {
     const { moneyResponse, moneyRequest } = this.props
 
-    console.warn('--- RENDER CALLED', JSON.stringify(this.props))
+    // console.warn('--- RENDER CALLED', JSON.stringify(this.props))
 
     return (
       <div>
@@ -26,11 +26,11 @@ class Widget extends React.PureComponent {
 
 const enhancedWidget = compose(
   withRequest(props => (purse, amount) => {
-    console.warn('--- (should always be called) requesting with purse:', purse, 'and adding amount:', amount)
+    // console.warn('- BEGIN REQUEST. purse:', purse, 'and adding amount:', amount)
     return new Promise(resolve => {
       setTimeout(() => {
         const total = purse + amount
-        console.warn('---- (should always be called) resolving with total:', total)
+        // console.warn('- RESOLVE REQUEST. total:', total)
         resolve(total)
       }, 3000)
     })

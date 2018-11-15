@@ -1,6 +1,6 @@
 {
   "name": "@gradealabs/with-request",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "withRequest HOC",
   "main": "index.js",
   "directories": {
@@ -44,7 +44,8 @@
   },
   "homepage": "https://github.com/gradealabs/with-request#readme",
   "dependencies": {
-    "recompose": "0.30.0",
-    "lodash.omitby": "4.6.0"
+    "cancelable-promise": "2.4.1",
+    "lodash.omitby": "4.6.0",
+    "recompose": "0.30.0"
   }
 }
