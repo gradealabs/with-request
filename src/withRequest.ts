@@ -20,10 +20,10 @@ import CancellablePromise from 'cancelable-promise'
  *
  * @example withRequest(props => (filter) => asyncAction(props.id, filter), { prefix: 'items', defaultResponse: [] })(Component)
  * @param {{ (props: Object): (params) => Promise<any> }} request The request function that accepts props
- * @param {{ prefix?: string, defaultResponse?: any, overlapStrategy?: 'cancel' }} [options] The options used when constructing the HOC
+ * @param {{ prefix?: string, defaultResponse?: any, overlapStrategy?: 'cancel', resetErrorOnResponse?: boolean, resetResponseOnError?: boolean }} [options] The options used when constructing the HOC
  */
 
-export default function withRequest (request, { prefix = '', defaultResponse = undefined, overlapStrategy = 'cancel' } = {}) {
+export default function withRequest (request, { prefix = '', defaultResponse = undefined, overlapStrategy = 'cancel', resetErrorOnResponse = true, resetResponseOnError = false } = {}) {
   if (typeof request !== 'function') {
     throw new Error('withRequest expects first argument `request` to be a function')
   }
@@ -34,6 +34,14 @@ export default function withRequest (request, { prefix = '', defaultResponse = u
 
   if (typeof overlapStrategy !== 'string' || ['cancel'].indexOf(overlapStrategy) === -1) {
     throw new Error('withRequest expects optional parameter `overlapStrategy` to be a string and one of the following: "cancel"')
+  }
+
+  if (typeof resetErrorOnResponse !== 'boolean') {
+    throw new Error('withRequest expects optional parameter `resetErrorOnResponse` to be a boolean')
+  }
+
+  if (typeof resetResponseOnError !== 'boolean') {
+    throw new Error('withRequest expects optional parameter `resetResponseOnError` to be a boolean')
   }
 
   return compose(
@@ -72,10 +80,12 @@ export default function withRequest (request, { prefix = '', defaultResponse = u
           .then(response => {
             setPendingPromise(null)
             setResponse(response)
+            resetErrorOnResponse && setError(null)
           })
           .catch(error => {
             setPendingPromise(null)
             setError(error)
+            resetResponseOnError && setResponse(defaultResponse)
           })
 
         setPendingPromise(promise)

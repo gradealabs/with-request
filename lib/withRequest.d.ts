@@ -16,12 +16,14 @@
  *
  * @example withRequest(props => (filter) => asyncAction(props.id, filter), { prefix: 'items', defaultResponse: [] })(Component)
  * @param {{ (props: Object): (params) => Promise<any> }} request The request function that accepts props
- * @param {{ prefix?: string, defaultResponse?: any, overlapStrategy?: 'cancel' }} [options] The options used when constructing the HOC
+ * @param {{ prefix?: string, defaultResponse?: any, overlapStrategy?: 'cancel', resetErrorOnResponse?: boolean, resetResponseOnError?: boolean }} [options] The options used when constructing the HOC
  */
-export default function withRequest(request: any, { prefix, defaultResponse, overlapStrategy }?: {
+export default function withRequest(request: any, { prefix, defaultResponse, overlapStrategy, resetErrorOnResponse, resetResponseOnError }?: {
     prefix?: string;
     defaultResponse?: any;
     overlapStrategy?: string;
+    resetErrorOnResponse?: boolean;
+    resetResponseOnError?: boolean;
 }): any;
 export declare function withCallRequestOnMount(execRequest: any): any;
 export declare function withCallRequestOnChange(shouldCall: any, execRequest: any): any;
